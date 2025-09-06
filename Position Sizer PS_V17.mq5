@@ -6,8 +6,8 @@
 #property copyright "EarnForex.com"
 #property link      "https://www.earnforex.com/metatrader-expert-advisors/Position-Sizer/"
 #property icon      "EF-Icon-64x64px.ico"
-#property version   "3.06 modV16"
-string    Version = "3.06 modV16";
+#property version   "3.06 modV17"
+string    Version = "3.06 modV17";
 
 
 
@@ -1741,3 +1741,4 @@ bool TakeProfitByTicket(ulong ticket, double percent)
     }
     return false;
 }
+
