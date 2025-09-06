@@ -825,6 +825,15 @@ ShowProfitOnSLTPLine();
 			return;
 		}
 		
+	// Handle order checkbox clicks
+	if(id == CHARTEVENT_OBJECT_CLICK && StringSubstr(sparam, 0, StringLen(ExtDialog.Name() + "m_ChkOrder")) == ExtDialog.Name() + "m_ChkOrder")
+	{
+		// Extract order index from checkbox name
+		string index_str = StringSubstr(sparam, StringLen(ExtDialog.Name() + "m_ChkOrder"));
+		int order_index = (int)StringToInteger(index_str);
+		ExtDialog.OnChangeOrderCheckBox(order_index);
+		return;
+	}
 		
     if (id == CHARTEVENT_MOUSE_MOVE)
     {
@@ -1256,30 +1265,78 @@ void SetBreakEven()
 void TakeProfitHalf()
 {
     bool has_closed = false;
-    for(int i=0; i<PositionsTotal(); i++)
+    bool has_selected_orders = false;
+    
+    // First, check if any orders are selected in the panel
+    for(int j = 0; j < ExtDialog.OrderCount; j++)
     {
-        if(PositionGetSymbol(i)==_Symbol)
+        if(ExtDialog.OrderSelectionStates[j])
         {
-            ulong ticket = PositionGetInteger(POSITION_TICKET);
-            double volume = PositionGetDouble(POSITION_VOLUME);
-            long type = PositionGetInteger(POSITION_TYPE);
-            if(volume>=0.02) // Đảm bảo tối thiểu volume/2 > 0.01 lot
+            has_selected_orders = true;
+            break;
+        }
+    }
+    
+    // If there are selected orders, only process those
+    if(has_selected_orders)
+    {
+        for(int j = 0; j < ExtDialog.OrderCount; j++)
+        {
+            if(ExtDialog.OrderSelectionStates[j])
             {
-                double close_vol = NormalizeDouble(volume/2.0, 2);
-                MqlTradeRequest req = {};
-                MqlTradeResult  res = {};
-                req.action   = TRADE_ACTION_DEAL;
-                req.symbol   = _Symbol;
-                req.position = ticket;
-                req.volume   = close_vol;
-                req.price    = (type==POSITION_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_BID) : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-                req.type     = (type==POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
-                req.deviation= 10;
-                if(OrderSend(req, res) && res.retcode == TRADE_RETCODE_DONE)
-                    has_closed = true;
+                ulong ticket = ExtDialog.OrderTickets[j];
+                if(PositionSelectByTicket(ticket))
+                {
+                    double volume = PositionGetDouble(POSITION_VOLUME);
+                    long type = PositionGetInteger(POSITION_TYPE);
+                    if(volume>=0.02) // Đảm bảo tối thiểu volume/2 > 0.01 lot
+                    {
+                        double close_vol = NormalizeDouble(volume/2.0, 2);
+                        MqlTradeRequest req = {};
+                        MqlTradeResult  res = {};
+                        req.action   = TRADE_ACTION_DEAL;
+                        req.symbol   = _Symbol;
+                        req.position = ticket;
+                        req.volume   = close_vol;
+                        req.price    = (type==POSITION_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_BID) : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+                        req.type     = (type==POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
+                        req.deviation= 10;
+                        if(OrderSend(req, res) && res.retcode == TRADE_RETCODE_DONE)
+                            has_closed = true;
+                    }
+                }
             }
         }
     }
+    else
+    {
+        // Fallback to original behavior: process all orders on current symbol
+        for(int i=0; i<PositionsTotal(); i++)
+        {
+            if(PositionGetSymbol(i)==_Symbol)
+            {
+                ulong ticket = PositionGetInteger(POSITION_TICKET);
+                double volume = PositionGetDouble(POSITION_VOLUME);
+                long type = PositionGetInteger(POSITION_TYPE);
+                if(volume>=0.02) // Đảm bảo tối thiểu volume/2 > 0.01 lot
+                {
+                    double close_vol = NormalizeDouble(volume/2.0, 2);
+                    MqlTradeRequest req = {};
+                    MqlTradeResult  res = {};
+                    req.action   = TRADE_ACTION_DEAL;
+                    req.symbol   = _Symbol;
+                    req.position = ticket;
+                    req.volume   = close_vol;
+                    req.price    = (type==POSITION_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_BID) : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+                    req.type     = (type==POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
+                    req.deviation= 10;
+                    if(OrderSend(req, res) && res.retcode == TRADE_RETCODE_DONE)
+                        has_closed = true;
+                }
+            }
+        }
+    }
+    
     if(has_closed)
         MessageBox("Đã chốt lời 1/2 số lot!", "Thông báo", MB_ICONINFORMATION);
     else
@@ -1289,30 +1346,78 @@ void TakeProfitHalf()
 void TakeProfitThreeQuater()
 {
     bool has_closed = false;
-    for(int i=0; i<PositionsTotal(); i++)
+    bool has_selected_orders = false;
+    
+    // First, check if any orders are selected in the panel
+    for(int j = 0; j < ExtDialog.OrderCount; j++)
     {
-        if(PositionGetSymbol(i)==_Symbol)
+        if(ExtDialog.OrderSelectionStates[j])
         {
-            ulong ticket = PositionGetInteger(POSITION_TICKET);
-            double volume = PositionGetDouble(POSITION_VOLUME);
-            long type = PositionGetInteger(POSITION_TYPE);
-            if(volume>=0.02) // Đảm bảo tối thiểu volume/2 > 0.01 lot
+            has_selected_orders = true;
+            break;
+        }
+    }
+    
+    // If there are selected orders, only process those
+    if(has_selected_orders)
+    {
+        for(int j = 0; j < ExtDialog.OrderCount; j++)
+        {
+            if(ExtDialog.OrderSelectionStates[j])
             {
-                double close_vol = NormalizeDouble(volume*3/4.0, 2);
-                MqlTradeRequest req = {};
-                MqlTradeResult  res = {};
-                req.action   = TRADE_ACTION_DEAL;
-                req.symbol   = _Symbol;
-                req.position = ticket;
-                req.volume   = close_vol;
-                req.price    = (type==POSITION_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_BID) : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-                req.type     = (type==POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
-                req.deviation= 10;
-                if(OrderSend(req, res) && res.retcode == TRADE_RETCODE_DONE)
-                    has_closed = true;
+                ulong ticket = ExtDialog.OrderTickets[j];
+                if(PositionSelectByTicket(ticket))
+                {
+                    double volume = PositionGetDouble(POSITION_VOLUME);
+                    long type = PositionGetInteger(POSITION_TYPE);
+                    if(volume>=0.02) // Đảm bảo tối thiểu volume/2 > 0.01 lot
+                    {
+                        double close_vol = NormalizeDouble(volume*3/4.0, 2);
+                        MqlTradeRequest req = {};
+                        MqlTradeResult  res = {};
+                        req.action   = TRADE_ACTION_DEAL;
+                        req.symbol   = _Symbol;
+                        req.position = ticket;
+                        req.volume   = close_vol;
+                        req.price    = (type==POSITION_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_BID) : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+                        req.type     = (type==POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
+                        req.deviation= 10;
+                        if(OrderSend(req, res) && res.retcode == TRADE_RETCODE_DONE)
+                            has_closed = true;
+                    }
+                }
             }
         }
     }
+    else
+    {
+        // Fallback to original behavior: process all orders on current symbol
+        for(int i=0; i<PositionsTotal(); i++)
+        {
+            if(PositionGetSymbol(i)==_Symbol)
+            {
+                ulong ticket = PositionGetInteger(POSITION_TICKET);
+                double volume = PositionGetDouble(POSITION_VOLUME);
+                long type = PositionGetInteger(POSITION_TYPE);
+                if(volume>=0.02) // Đảm bảo tối thiểu volume/2 > 0.01 lot
+                {
+                    double close_vol = NormalizeDouble(volume*3/4.0, 2);
+                    MqlTradeRequest req = {};
+                    MqlTradeResult  res = {};
+                    req.action   = TRADE_ACTION_DEAL;
+                    req.symbol   = _Symbol;
+                    req.position = ticket;
+                    req.volume   = close_vol;
+                    req.price    = (type==POSITION_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_BID) : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+                    req.type     = (type==POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
+                    req.deviation= 10;
+                    if(OrderSend(req, res) && res.retcode == TRADE_RETCODE_DONE)
+                        has_closed = true;
+                }
+            }
+        }
+    }
+    
     if(has_closed)
         MessageBox("Đã chốt lời 3/4 số lot!", "Thông báo", MB_ICONINFORMATION);
     else

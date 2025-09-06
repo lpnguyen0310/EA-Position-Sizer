@@ -8,7 +8,7 @@
 class CPositionSizeCalculator : public CAppDialog
 {
 private:
-    CButton          m_BtnTabMain, m_BtnTabRisk, m_BtnTabMargin, m_BtnTabSwaps, m_BtnTabTrading, m_BtnOrderType, m_BtnAccount, m_BtnLines, m_BtnStopLoss, m_BtnTakeProfit, m_BtnEntry, m_BtnATRTimeframe, m_BtnCommissionType, m_BtnMaxPS, m_BtnTrade, m_BtnTPsInward, m_BtnTPsOutward, m_BtnTradingTPShare, m_BtnQuickRisk1, m_BtnQuickRisk2, m_BtnEntryIncrease, m_BtnEntryDecrease, m_BtnStopLossIncrease, m_BtnStopLossDecrease, m_BtnTakeProfitIncrease, m_BtnTakeProfitDecrease, m_BtnStopPriceIncrease, m_BtnStopPriceDecrease, m_BtnTakeProfitsNumberAdd, m_BtnTakeProfitsNumberRemove;;
+    CButton          m_BtnTabMain, m_BtnTabRisk, m_BtnTabMargin, m_BtnTabSwaps, m_BtnTabTrading, m_BtnOrderType, m_BtnAccount, m_BtnLines, m_BtnStopLoss, m_BtnTakeProfit, m_BtnEntry, m_BtnATRTimeframe, m_BtnCommissionType, m_BtnMaxPS, m_BtnTrade, m_BtnTPsInward, m_BtnTPsOutward, m_BtnTradingTPShare, m_BtnQuickRisk1, m_BtnQuickRisk2, m_BtnEntryIncrease, m_BtnEntryDecrease, m_BtnStopLossIncrease, m_BtnStopLossDecrease, m_BtnTakeProfitIncrease, m_BtnTakeProfitDecrease, m_BtnStopPriceIncrease, m_BtnStopPriceDecrease, m_BtnTakeProfitsNumberAdd, m_BtnTakeProfitsNumberRemove, m_BtnSelectAll, m_BtnTakeHalfSelected, m_BtnTakeThreeQuarterSelected;;
     CCheckBox        m_ChkSpreadAdjustmentSL, m_ChkSpreadAdjustmentTP, m_ChkCountPendings, m_ChkIgnoreOrdersWithoutSL, m_ChkIgnoreOrdersWithoutTP, m_ChkIgnoreOtherSymbols, m_ChkDisableTradingWhenLinesAreHidden, m_ChkSubtractPositions, m_ChkSubtractPendingOrders, m_ChkDoNotApplyStopLoss, m_ChkDoNotApplyTakeProfit, m_ChkAskForConfirmation, m_ChkCommentAutoSuffix;
     CEdit            m_EdtEntryLevel, m_EdtSL, m_EdtTP, m_EdtStopPrice, m_EdtAccount, m_EdtCommissionSize, m_EdtRiskPIn, m_EdtRiskPRes, m_EdtRiskMIn, m_EdtRiskMRes, m_EdtReward1, m_EdtReward2, m_EdtRR1, m_EdtRR2, m_EdtPosSize, m_EdtPointValue, m_EdtATRPeriod, m_EdtATRMultiplierSL, m_EdtATRMultiplierTP, m_EdtCurRiskM, m_EdtCurRiskP, m_EdtPotRiskM, m_EdtPotRiskP, m_EdtCurProfitM, m_EdtCurProfitP, m_EdtPotProfitM, m_EdtPotProfitP, m_EdtCurL, m_EdtPotL, m_EdtPosMargin, m_EdtUsedMargin, m_EdtFreeMargin, m_EdtCustomLeverage, m_EdtMaxPositionSizeByMargin, m_EdtSwapsType, m_EdtSwapsTripleDay, m_EdtSwapsNominalLong, m_EdtSwapsNominalShort, m_EdtSwapsDailyLongLot, m_EdtSwapsDailyShortLot, m_EdtSwapsDailyLongPS, m_EdtSwapsDailyShortPS, m_EdtSwapsYearlyLongLot, m_EdtSwapsYearlyShortLot, m_EdtSwapsYearlyLongPS, m_EdtSwapsYearlyShortPS, m_EdtMagicNumber, m_EdtCommentary, m_EdtMaxSlippage, m_EdtMaxSpread, m_EdtMaxEntrySLDistance, m_EdtMinEntrySLDistance, m_EdtMaxPositionSize, m_EdtTrailingStopPoints, m_EdtBreakEvenPoints, m_EdtMaxNumberOfTradesTotal, m_EdtMaxNumberOfTradesPerSymbol, m_EdtMaxPositionSizeTotal, m_EdtMaxPositionSizePerSymbol, m_EdtMaxRiskTotal, m_EdtMaxRiskPerSymbol;
     CLabel           m_LblEntryLevel, m_LblEntryWarning, m_LblSL, m_LblSLWarning, m_LblTPWarning, m_LblStopPrice, m_LblStopPriceWarning, m_LblOrderType, m_LblCommissionSize, m_LblAdditionalFundsAsterisk, m_LblInput, m_LblResult, m_LblRisk, m_LblRiskM, m_LblReward, m_LblRR, m_LblPosSize, m_LblPointValue, m_LblATRPeriod, m_LblATRMultiplierSL, m_LblATRMultiplierTP, m_LblATRValue, m_LblATRTimeframe, m_LblCurrentRiskMoney, m_LblCurrentRiskPerc, m_LblCurrentProfitMoney, m_LblCurrentProfitPerc, m_LblPotentialRiskMoney, m_LblPotentialRiskPerc, m_LblPotentialProfitMoney, m_LblPotentialProfitPerc, m_LblCurrentLots, m_LblPotentialLots, m_LblCurrentPortfolio, m_LblPotentialPortfolio, m_LblPosMargin, m_LblUsedMargin, m_LblFreeMargin, m_LblCustomLeverage, m_LblAccLeverage, m_LblSymbolLeverage, m_LblMaxPositionSizeByMargin, m_LblSwapsType, m_LblSwapsTripleDay, m_LblSwapsLong, m_LblSwapsShort, m_LblSwapsNominal, m_LblSwapsDaily, m_LblSwapsYearly, m_LblSwapsPerLotDaily, m_LblSwapsPerPSDaily, m_LblSwapsPerLotYearly, m_LblSwapsPerPSYearly, m_LblMagicNumber, m_LblCommentary, m_LblTradingPoints, m_LblMaxSlippage, m_LblMaxSpread, m_LblMaxEntrySLDistance, m_LblMinEntrySLDistance, m_LblTradingLots, m_LblURL, m_LblTradingTP, m_LblTrailingStop, m_LblBreakEven, m_LblMaxNumberOfTrades, m_LblMaxNumberOfTradesTotal, m_LblMaxNumberOfTradesPerSymbol, m_LblMaxPositionSize, m_LblMaxPositionSizeTotal, m_LblMaxPositionSizePerSymbol, m_LblMaxRisk, m_LblMaxRiskTotal, m_LblMaxRiskPerSymbol;;
@@ -22,6 +22,11 @@ private:
     CLabel           TradingTPLabels[];
     CEdit            TradingTPEdits[];
     CEdit            TradingTPShareEdits[];
+
+    // Order Management Panel
+    CLabel           OrderListLabels[];
+    CCheckBox        OrderListCheckBoxes[];
+    CLabel           m_LblOrdersHeader;
 
     // Extra TP fields for the Main tab.
     CLabel           AdditionalTPLabels[], AdditionalTPWarnings[];
@@ -37,6 +42,11 @@ private:
 public:
     CPositionSizeCalculator(void);
    ~CPositionSizeCalculator(void);
+
+    // Order Management State (public for access from main file)
+    bool             OrderSelectionStates[];
+    ulong            OrderTickets[];
+    int              OrderCount;
 
             void     UpdateFileName();
             void     InitVariables();
@@ -180,6 +190,15 @@ private:
     void OnClickBtnTrade();
     void OnClickBtnQuickRisk1();
     void OnClickBtnQuickRisk2();
+    
+    // Order Management Event Handlers
+    void OnClickBtnSelectAll();
+    void OnClickBtnTakeHalfSelected();
+    void OnClickBtnTakeThreeQuarterSelected();
+    void OnChangeOrderCheckBox(int index);
+    void UpdateOrdersList();
+    bool IsOrderSelected(ulong ticket);
+    void TakeProfitForOrder(ulong ticket, double fraction);
 };
 
 // Event Map
@@ -250,6 +269,9 @@ if (ShowATROptions) ON_EVENT(ON_CLICK, m_BtnATRTimeframe, OnClickBtnATRTimeframe
 ON_EVENT(ON_CLICK, m_BtnTrade, OnClickBtnTrade)
 if (QuickRisk1 > 0) ON_EVENT(ON_CLICK, m_BtnQuickRisk1, OnClickBtnQuickRisk1)
 if (QuickRisk2 > 0) ON_EVENT(ON_CLICK, m_BtnQuickRisk2, OnClickBtnQuickRisk2)
+ON_EVENT(ON_CLICK, m_BtnSelectAll, OnClickBtnSelectAll)
+ON_EVENT(ON_CLICK, m_BtnTakeHalfSelected, OnClickBtnTakeHalfSelected)
+ON_EVENT(ON_CLICK, m_BtnTakeThreeQuarterSelected, OnClickBtnTakeThreeQuarterSelected)
 EVENT_MAP_END(CAppDialog)
 
 //+-------------------+
@@ -288,6 +310,13 @@ void CPositionSizeCalculator::InitVariables()
     remember_left = -1;
     remember_top = -1;
     MaxTakeProfitsNumber = 1;
+    
+    // Initialize order management
+    OrderCount = 0;
+    ArrayResize(OrderTickets, 0);
+    ArrayResize(OrderSelectionStates, 0);
+    ArrayResize(OrderListLabels, 0);
+    ArrayResize(OrderListCheckBoxes, 0);
 }
 
 //+--------+
@@ -1056,6 +1085,20 @@ bool CPositionSizeCalculator::CreateObjects()
         y += element_height + v_spacing;
     }
     
+    // Order Management Panel
+    y += v_spacing; // Extra spacing before the order management section
+    
+    if (!LabelCreate(TradingTabList, m_LblOrdersHeader, first_column_start, y, first_column_start + normal_label_width * 2, y + element_height, "m_LblOrdersHeader", "Open Orders Selection:"))     return false;
+    
+    y += element_height + v_spacing;
+    
+    // Select All button and Take Profit buttons
+    if (!ButtonCreate(TradingTabList, m_BtnSelectAll, first_column_start, y, first_column_start + tab_button_width + 10, y + element_height, "m_BtnSelectAll", "Select All"))                                          return false;
+    if (!ButtonCreate(TradingTabList, m_BtnTakeHalfSelected, first_column_start + tab_button_width + 20, y, first_column_start + tab_button_width * 2 + 20, y + element_height, "m_BtnTakeHalfSelected", "TP 1/2"))                                          return false;
+    if (!ButtonCreate(TradingTabList, m_BtnTakeThreeQuarterSelected, first_column_start + tab_button_width * 2 + 30, y, first_column_start + tab_button_width * 3 + 30, y + element_height, "m_BtnTakeThreeQuarterSelected", "TP 3/4"))                                          return false;
+    
+    y += element_height + v_spacing;
+    
     if (!CheckBoxCreate(TradingTabList, m_ChkAskForConfirmation, first_column_start, y, panel_end, y + element_height, "m_ChkAskForConfirmation", TRANSLATION_CHECKBOX_ASK_FOR_CONFIRMATION, TRANSLATION_TOOLTIP_ASK_FOR_CONFIRMATION))           return false;
 
     InitObjects();
@@ -1749,6 +1792,12 @@ bool CPositionSizeCalculator::DisplayValues()
             }
             AdditionalTPLineMoved = false;
         }
+    }
+
+    // Update orders list if Trading tab is selected
+    if (sets.SelectedTab == TradingTab)
+    {
+        UpdateOrdersList();
     }
 
     return true;
@@ -7763,6 +7812,141 @@ double CalculateCommission()
         commission = ContractValue * sets.CommissionPerLot / 100;
     }
     return commission;
+}
+
+// Order Management Event Handlers
+void CPositionSizeCalculator::OnClickBtnSelectAll()
+{
+    for (int i = 0; i < OrderCount; i++)
+    {
+        OrderSelectionStates[i] = true;
+        if (i < ArraySize(OrderListCheckBoxes))
+            OrderListCheckBoxes[i].Checked(true);
+    }
+}
+
+void CPositionSizeCalculator::OnClickBtnTakeHalfSelected()
+{
+    for (int i = 0; i < OrderCount; i++)
+    {
+        if (OrderSelectionStates[i])
+        {
+            // Take profit 1/2 for this specific order
+            TakeProfitForOrder(OrderTickets[i], 0.5);
+        }
+    }
+    UpdateOrdersList(); // Refresh the orders list
+}
+
+void CPositionSizeCalculator::OnClickBtnTakeThreeQuarterSelected()
+{
+    for (int i = 0; i < OrderCount; i++)
+    {
+        if (OrderSelectionStates[i])
+        {
+            // Take profit 3/4 for this specific order
+            TakeProfitForOrder(OrderTickets[i], 0.75);
+        }
+    }
+    UpdateOrdersList(); // Refresh the orders list
+}
+
+void CPositionSizeCalculator::OnChangeOrderCheckBox(int index)
+{
+    if (index >= 0 && index < OrderCount)
+    {
+        OrderSelectionStates[index] = OrderListCheckBoxes[index].Checked();
+    }
+}
+
+void CPositionSizeCalculator::UpdateOrdersList()
+{
+    // Clear existing order UI elements
+    for (int i = 0; i < ArraySize(OrderListLabels); i++)
+    {
+        OrderListLabels[i].Hide();
+        OrderListCheckBoxes[i].Hide();
+    }
+    
+    OrderCount = 0;
+    ArrayResize(OrderTickets, PositionsTotal());
+    ArrayResize(OrderSelectionStates, PositionsTotal());
+    ArrayResize(OrderListLabels, PositionsTotal());
+    ArrayResize(OrderListCheckBoxes, PositionsTotal());
+    
+    // Collect current symbol positions
+    for (int i = 0; i < PositionsTotal(); i++)
+    {
+        if (PositionGetSymbol(i) == _Symbol)
+        {
+            OrderTickets[OrderCount] = PositionGetInteger(POSITION_TICKET);
+            OrderSelectionStates[OrderCount] = false;
+            
+            // Create or update UI elements for this order
+            string order_text = StringFormat("Ticket: %I64d, Vol: %.2f, Type: %s", 
+                                              OrderTickets[OrderCount],
+                                              PositionGetDouble(POSITION_VOLUME),
+                                              PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY ? "BUY" : "SELL");
+            
+            // Position UI elements below the buttons (use fixed positioning)
+            int base_y = 250; // Base Y position
+            int y_pos = base_y + element_height * OrderCount + v_spacing * OrderCount;
+            
+            if (!LabelCreate(TradingTabList, OrderListLabels[OrderCount], first_column_start + 20, y_pos, first_column_start + normal_label_width * 2, y_pos + element_height, "m_LblOrder" + IntegerToString(OrderCount), order_text))
+            {
+                Print("Failed to create order label for order ", OrderCount);
+            }
+            
+            if (!CheckBoxCreate(TradingTabList, OrderListCheckBoxes[OrderCount], first_column_start, y_pos, first_column_start + 15, y_pos + element_height, "m_ChkOrder" + IntegerToString(OrderCount), "", "Select this order"))
+            {
+                Print("Failed to create order checkbox for order ", OrderCount);
+            }
+            
+            OrderCount++;
+        }
+    }
+}
+
+bool CPositionSizeCalculator::IsOrderSelected(ulong ticket)
+{
+    for (int i = 0; i < OrderCount; i++)
+    {
+        if (OrderTickets[i] == ticket)
+            return OrderSelectionStates[i];
+    }
+    return false;
+}
+
+// Helper function to take profit for a specific order
+void CPositionSizeCalculator::TakeProfitForOrder(ulong ticket, double fraction)
+{
+    if (!PositionSelectByTicket(ticket)) return;
+    
+    double volume = PositionGetDouble(POSITION_VOLUME);
+    long type = PositionGetInteger(POSITION_TYPE);
+    
+    if (volume >= 0.02) // Ensure minimum volume after partial close
+    {
+        double close_vol = NormalizeDouble(volume * fraction, 2);
+        MqlTradeRequest req = {};
+        MqlTradeResult res = {};
+        req.action = TRADE_ACTION_DEAL;
+        req.symbol = _Symbol;
+        req.position = ticket;
+        req.volume = close_vol;
+        req.price = (type == POSITION_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_BID) : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+        req.type = (type == POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
+        req.deviation = 10;
+        
+        if (OrderSend(req, res) && res.retcode == TRADE_RETCODE_DONE)
+        {
+            Print("Successfully closed ", fraction * 100, "% of position ", ticket);
+        }
+        else
+        {
+            Print("Failed to close position ", ticket, ". Error: ", res.retcode);
+        }
+    }
 }
 
 string WeekdayToString(int weekday)
