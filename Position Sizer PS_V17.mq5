@@ -188,6 +188,20 @@ CPositionSizeCalculator* ExtDialog;
 #define TAKETHREEQUATER_BUTTON_NAME "PS_TAKETHREEQUATER_BUTTON"
 #define RISKUSD_EDIT_NAME "PS_RISKUSD_EDIT"
 #define CLOSEALL_BUTTON_NAME "PS_CLOSEALL_BUTTON"
+#define PARTIAL_TITLE_LABEL "PARTIAL_TITLE_LABEL"
+
+#define PARTIAL_PANEL_BG   "PARTIAL_PANEL_BG"
+#define PARTIAL_BTN_PREF   "PARTIAL_BTN_"
+#define PARTIAL_OK         "PARTIAL_OK"
+#define PARTIAL_ALL        "PARTIAL_ALL"
+#define PARTIAL_CANCEL     "PARTIAL_CANCEL"
+#define MAX_PARTIAL_POS    20
+
+bool partial_selected[MAX_PARTIAL_POS];
+ulong partial_ticket[MAX_PARTIAL_POS];
+int partial_count = 0;
+double partial_percent = 0.5;
+
 
 
 
@@ -803,20 +817,66 @@ ShowProfitOnSLTPLine();
     return;
 }
 
-   if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKEHALF_BUTTON_NAME)
-   {
-       TakeProfitHalf();
-       MessageBox("Đã chốt lời 1/2 số lot!", "Thông báo", MB_ICONINFORMATION);
-       return;
-   }
-   
-    if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKETHREEQUATER_BUTTON_NAME)
-   {
-       TakeProfitThreeQuater();
-      
-       MessageBox("Đã chốt lời 3/4 số lot!", "Thông báo", MB_ICONINFORMATION);
-       return;
-   }
+
+// Xử lý sự kiện panel partial close
+if(id == CHARTEVENT_OBJECT_CLICK && sparam == PARTIAL_CANCEL)
+{
+    DeletePartialClosePanel();
+    return;
+}
+if(id == CHARTEVENT_OBJECT_CLICK && sparam == PARTIAL_OK)
+{
+    // Duyệt qua các lệnh đã chọn (tức là partial_selected[i] == true)
+    int closed = 0;
+    for(int i=0;i<partial_count;i++)
+    {
+        if(partial_selected[i])
+        {
+            if(TakeProfitByTicket(partial_ticket[i], partial_percent))
+                closed++;
+        }
+    }
+    MessageBox(StringFormat("Đã chốt lời %d lệnh theo tỷ lệ %.2f%%!", closed, partial_percent*100.0), "Thông báo", MB_ICONINFORMATION);
+    DeletePartialClosePanel();
+    return;
+}
+if(id == CHARTEVENT_OBJECT_CLICK && sparam == PARTIAL_ALL)
+{
+    // Chọn tất cả, đổi trạng thái partial_selected
+    for(int i=0;i<partial_count;i++)
+        partial_selected[i] = true;
+    // Tùy chọn: có thể đổi màu nút để hiển thị đã chọn
+    return;
+}
+
+// Xử lý click từng nút chọn lệnh (dòng lệnh)
+for(int i=0;i<partial_count;i++)
+{
+    string btn = PARTIAL_BTN_PREF + IntegerToString(i+1);
+    if(id == CHARTEVENT_OBJECT_CLICK && sparam == btn)
+    {
+        partial_selected[i] = !partial_selected[i];
+        // Đổi màu nút để biết trạng thái đã chọn chưa
+        ObjectSetInteger(0, btn, OBJPROP_BGCOLOR, partial_selected[i]?clrLime:clrWhite);
+        return;
+    }
+}
+
+
+
+
+
+
+  if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKEHALF_BUTTON_NAME)
+{
+    ShowPartialClosePanel(0.5); // Panel chọn lệnh chốt 1/2
+    return;
+}
+if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKETHREEQUATER_BUTTON_NAME)
+{
+    ShowPartialClosePanel(0.75); // Panel chọn lệnh chốt 3/4
+    return;
+}
 
 	if(id == CHARTEVENT_OBJECT_CLICK && sparam == BE_BUTTON_NAME)
 		{
@@ -1529,4 +1589,155 @@ void ShowProfitOnSLTPLine()
     }
 
     ChartRedraw();
+}
+
+
+void ShowPartialClosePanel(double percent)
+{
+    DeletePartialClosePanel();
+    partial_percent = percent;
+    partial_count = 0;
+    int panel_x = 25, panel_y = 20;
+    int panel_width = 350, panel_height = 36+27*MAX_PARTIAL_POS;
+    int font_size = 16;
+
+    // Tạo panel nền
+    ObjectCreate(0, PARTIAL_PANEL_BG, OBJ_RECTANGLE_LABEL, 0, 0, 0);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_XDISTANCE, panel_x);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_YDISTANCE, panel_y);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_XSIZE, panel_width);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_YSIZE, panel_height);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_BGCOLOR, clrAliceBlue);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_COLOR, clrBlue);
+
+    // Tạo tiêu đề căn giữa
+    string title = StringFormat("Chốt lời %.0f%%", percent*100.0);
+    int title_len = StringLen(title);
+    int est_char_width = font_size * 0.6;
+    int title_width = (int)(title_len * est_char_width);
+    int title_x = panel_x + (panel_width - title_width) / 2;
+    int title_y = panel_y + 12;
+
+    ObjectCreate(0, PARTIAL_TITLE_LABEL, OBJ_LABEL, 0, 0, 0);
+    ObjectSetInteger(0, PARTIAL_TITLE_LABEL, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+    ObjectSetInteger(0, PARTIAL_TITLE_LABEL, OBJPROP_XDISTANCE, title_x);
+    ObjectSetInteger(0, PARTIAL_TITLE_LABEL, OBJPROP_YDISTANCE, title_y);
+    ObjectSetInteger(0, PARTIAL_TITLE_LABEL, OBJPROP_FONTSIZE, font_size);
+    ObjectSetInteger(0, PARTIAL_TITLE_LABEL, OBJPROP_COLOR, clrBlue);
+    ObjectSetString(0, PARTIAL_TITLE_LABEL, OBJPROP_TEXT, title);
+
+    int y = panel_y + 40;
+
+    // Panel chính
+    ObjectCreate(0, PARTIAL_PANEL_BG, OBJ_RECTANGLE_LABEL, 0, 0, 0);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_XDISTANCE, 25);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_YDISTANCE, 20);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_XSIZE, 350);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_YSIZE, 36+27*MAX_PARTIAL_POS);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_BGCOLOR, clrAliceBlue);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_COLOR, clrBlue);
+
+    int idx = 0;
+    for(int i=0;i<PositionsTotal();i++)
+    {
+        if(PositionGetSymbol(i)==_Symbol && idx<MAX_PARTIAL_POS)
+        {
+            ulong ticket = PositionGetInteger(POSITION_TICKET);
+            double vol = PositionGetDouble(POSITION_VOLUME);
+            double price = PositionGetDouble(POSITION_PRICE_OPEN);
+            string btnName = PARTIAL_BTN_PREF + IntegerToString(idx+1);
+
+            partial_selected[idx] = false;
+            partial_ticket[idx] = ticket;
+
+            ObjectCreate(0, btnName, OBJ_BUTTON, 0, 0, 0);
+            ObjectSetInteger(0, btnName, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+            ObjectSetInteger(0, btnName, OBJPROP_XDISTANCE, 35);
+            ObjectSetInteger(0, btnName, OBJPROP_YDISTANCE, y);
+            ObjectSetInteger(0, btnName, OBJPROP_XSIZE, 320);
+            ObjectSetInteger(0, btnName, OBJPROP_YSIZE, 24);
+            ObjectSetInteger(0, btnName, OBJPROP_BGCOLOR, clrWhite);
+            ObjectSetInteger(0, btnName, OBJPROP_COLOR, clrBlack);
+            ObjectSetInteger(0, btnName, OBJPROP_FONTSIZE, 10);
+            ObjectSetString(0, btnName, OBJPROP_TEXT, 
+                StringFormat("#%d | Ticket: %llu | Lot: %.2f | Giá: %.5f", idx+1, ticket, vol, price));
+            ObjectSetInteger(0, btnName, OBJPROP_HIDDEN, false);
+            ObjectSetString(0, btnName, OBJPROP_TOOLTIP, "Click chọn/bỏ chọn lệnh này");
+
+            y += 27;
+            idx++;
+        }
+    }
+    partial_count = idx;
+
+    ObjectCreate(0, PARTIAL_ALL, OBJ_BUTTON, 0, 0, 0);
+    ObjectSetInteger(0, PARTIAL_ALL, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+    ObjectSetInteger(0, PARTIAL_ALL, OBJPROP_XDISTANCE, 50);
+    ObjectSetInteger(0, PARTIAL_ALL, OBJPROP_YDISTANCE, y+8);
+    ObjectSetInteger(0, PARTIAL_ALL, OBJPROP_XSIZE, 85);
+    ObjectSetInteger(0, PARTIAL_ALL, OBJPROP_YSIZE, 23);
+    ObjectSetInteger(0, PARTIAL_ALL, OBJPROP_BGCOLOR, clrYellow);
+    ObjectSetString(0, PARTIAL_ALL, OBJPROP_TEXT, "Chọn tất cả");
+
+    ObjectCreate(0, PARTIAL_OK, OBJ_BUTTON, 0, 0, 0);
+    ObjectSetInteger(0, PARTIAL_OK, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+    ObjectSetInteger(0, PARTIAL_OK, OBJPROP_XDISTANCE, 160);
+    ObjectSetInteger(0, PARTIAL_OK, OBJPROP_YDISTANCE, y+8);
+    ObjectSetInteger(0, PARTIAL_OK, OBJPROP_XSIZE, 80);
+    ObjectSetInteger(0, PARTIAL_OK, OBJPROP_YSIZE, 23);
+    ObjectSetInteger(0, PARTIAL_OK, OBJPROP_BGCOLOR, clrLimeGreen);
+    ObjectSetString(0, PARTIAL_OK, OBJPROP_TEXT, "Chốt lời");
+
+    ObjectCreate(0, PARTIAL_CANCEL, OBJ_BUTTON, 0, 0, 0);
+    ObjectSetInteger(0, PARTIAL_CANCEL, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+    ObjectSetInteger(0, PARTIAL_CANCEL, OBJPROP_XDISTANCE, 260);
+    ObjectSetInteger(0, PARTIAL_CANCEL, OBJPROP_YDISTANCE, y+8);
+    ObjectSetInteger(0, PARTIAL_CANCEL, OBJPROP_XSIZE, 65);
+    ObjectSetInteger(0, PARTIAL_CANCEL, OBJPROP_YSIZE, 23);
+    ObjectSetInteger(0, PARTIAL_CANCEL, OBJPROP_BGCOLOR, clrRed);
+    ObjectSetString(0, PARTIAL_CANCEL, OBJPROP_TEXT, "Hủy");
+}
+
+void DeletePartialClosePanel()
+{
+    ObjectDelete(0, PARTIAL_TITLE_LABEL); // Xóa tiêu đề
+    ObjectDelete(0, PARTIAL_PANEL_BG);
+    for(int i=0;i<MAX_PARTIAL_POS;i++)
+        ObjectDelete(0, PARTIAL_BTN_PREF + IntegerToString(i+1));
+    ObjectDelete(0, PARTIAL_OK);
+    ObjectDelete(0, PARTIAL_ALL);
+    ObjectDelete(0, PARTIAL_CANCEL);
+}
+
+bool TakeProfitByTicket(ulong ticket, double percent)
+{
+    for(int i=0; i<PositionsTotal(); i++)
+    {
+        if(PositionGetSymbol(i)==_Symbol && PositionGetInteger(POSITION_TICKET)==ticket)
+        {
+            double volume = PositionGetDouble(POSITION_VOLUME);
+            long type = PositionGetInteger(POSITION_TYPE);
+            double close_vol = NormalizeDouble(volume*percent, 2);
+            double minlot = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+            double lotstep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+            close_vol = MathMax(close_vol, minlot);
+            close_vol = MathFloor(close_vol/lotstep)*lotstep;
+            if(close_vol < minlot + 1e-8)
+                return false;
+            MqlTradeRequest req = {};
+            MqlTradeResult  res = {};
+            req.action   = TRADE_ACTION_DEAL;
+            req.symbol   = _Symbol;
+            req.position = ticket;
+            req.volume   = close_vol;
+            req.price    = (type==POSITION_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_BID) : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+            req.type     = (type==POSITION_TYPE_BUY) ? ORDER_TYPE_SELL : ORDER_TYPE_BUY;
+            req.deviation= 10;
+            if(OrderSend(req, res) && res.retcode == TRADE_RETCODE_DONE)
+                return true;
+        }
+    }
+    return false;
 }
