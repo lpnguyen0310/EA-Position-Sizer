@@ -7823,39 +7823,51 @@ void CPositionSizeCalculator::OnClickBtnSelectAll()
         if (i < ArraySize(OrderListCheckBoxes))
             OrderListCheckBoxes[i].Checked(true);
     }
+    Print("Selected all ", OrderCount, " orders");
 }
 
 void CPositionSizeCalculator::OnClickBtnTakeHalfSelected()
 {
+    int processed = 0;
     for (int i = 0; i < OrderCount; i++)
     {
         if (OrderSelectionStates[i])
         {
             // Take profit 1/2 for this specific order
             TakeProfitForOrder(OrderTickets[i], 0.5);
+            processed++;
         }
     }
     UpdateOrdersList(); // Refresh the orders list
+    Print("Processed ", processed, " orders for 1/2 take profit");
 }
 
 void CPositionSizeCalculator::OnClickBtnTakeThreeQuarterSelected()
 {
+    int processed = 0;
     for (int i = 0; i < OrderCount; i++)
     {
         if (OrderSelectionStates[i])
         {
             // Take profit 3/4 for this specific order
             TakeProfitForOrder(OrderTickets[i], 0.75);
+            processed++;
         }
     }
     UpdateOrdersList(); // Refresh the orders list
+    Print("Processed ", processed, " orders for 3/4 take profit");
 }
 
 void CPositionSizeCalculator::OnChangeOrderCheckBox(int index)
 {
-    if (index >= 0 && index < OrderCount)
+    if (index >= 0 && index < OrderCount && index < ArraySize(OrderListCheckBoxes))
     {
         OrderSelectionStates[index] = OrderListCheckBoxes[index].Checked();
+        Print("Order ", index, " (ticket ", OrderTickets[index], ") selection changed to: ", OrderSelectionStates[index]);
+    }
+    else
+    {
+        Print("Invalid order index: ", index, " (OrderCount: ", OrderCount, ")");
     }
 }
 
@@ -7868,14 +7880,15 @@ void CPositionSizeCalculator::UpdateOrdersList()
         OrderListCheckBoxes[i].Hide();
     }
     
+    int total_positions = PositionsTotal();
     OrderCount = 0;
-    ArrayResize(OrderTickets, PositionsTotal());
-    ArrayResize(OrderSelectionStates, PositionsTotal());
-    ArrayResize(OrderListLabels, PositionsTotal());
-    ArrayResize(OrderListCheckBoxes, PositionsTotal());
+    ArrayResize(OrderTickets, total_positions);
+    ArrayResize(OrderSelectionStates, total_positions);
+    ArrayResize(OrderListLabels, total_positions);
+    ArrayResize(OrderListCheckBoxes, total_positions);
     
     // Collect current symbol positions
-    for (int i = 0; i < PositionsTotal(); i++)
+    for (int i = 0; i < total_positions; i++)
     {
         if (PositionGetSymbol(i) == _Symbol)
         {
@@ -7905,6 +7918,8 @@ void CPositionSizeCalculator::UpdateOrdersList()
             OrderCount++;
         }
     }
+    
+    Print("Updated orders list with ", OrderCount, " positions for symbol ", _Symbol);
 }
 
 bool CPositionSizeCalculator::IsOrderSelected(ulong ticket)
