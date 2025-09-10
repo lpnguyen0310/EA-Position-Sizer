@@ -869,12 +869,56 @@ for(int i=0;i<partial_count;i++)
 
   if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKEHALF_BUTTON_NAME)
 {
-    ShowPartialClosePanel(0.5); // Panel chọn lệnh chốt 1/2
+    int position_count = CountPositionsForSymbol();
+    if(position_count == 0)
+    {
+        MessageBox("Không có lệnh nào đang mở để chốt lời!", "Thông báo", MB_ICONWARNING);
+    }
+    else if(position_count == 1)
+    {
+        // Chỉ có 1 lệnh, thực hiện ngay chức năng chốt lời
+        ulong ticket = GetFirstPositionTicket();
+        if(TakeProfitByTicket(ticket, 0.5))
+        {
+            MessageBox("Đã chốt lời 1/2 số lot cho lệnh duy nhất!", "Thông báo", MB_ICONINFORMATION);
+        }
+        else
+        {
+            MessageBox("Không thể chốt lời 1/2! Kiểm tra volume tối thiểu.", "Thông báo", MB_ICONWARNING);
+        }
+    }
+    else
+    {
+        // Nhiều lệnh, hiển thị panel chọn lệnh
+        ShowPartialClosePanel(0.5);
+    }
     return;
 }
 if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKETHREEQUATER_BUTTON_NAME)
 {
-    ShowPartialClosePanel(0.75); // Panel chọn lệnh chốt 3/4
+    int position_count = CountPositionsForSymbol();
+    if(position_count == 0)
+    {
+        MessageBox("Không có lệnh nào đang mở để chốt lời!", "Thông báo", MB_ICONWARNING);
+    }
+    else if(position_count == 1)
+    {
+        // Chỉ có 1 lệnh, thực hiện ngay chức năng chốt lời
+        ulong ticket = GetFirstPositionTicket();
+        if(TakeProfitByTicket(ticket, 0.75))
+        {
+            MessageBox("Đã chốt lời 3/4 số lot cho lệnh duy nhất!", "Thông báo", MB_ICONINFORMATION);
+        }
+        else
+        {
+            MessageBox("Không thể chốt lời 3/4! Kiểm tra volume tối thiểu.", "Thông báo", MB_ICONWARNING);
+        }
+    }
+    else
+    {
+        // Nhiều lệnh, hiển thị panel chọn lệnh
+        ShowPartialClosePanel(0.75);
+    }
     return;
 }
 
@@ -993,8 +1037,8 @@ if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKETHREEQUATER_BUTTON_NAME)
         // ==== ĐỔI CHIỀU LỆNH ====
         if ((MainKey_SwitchEntryDirectionHotKey != 0) && (lparam == MainKey_SwitchEntryDirectionHotKey))
         {
-            if (((!ShiftRequired_SwitchEntryDirectionHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) == 0))
-                && ((!CtrlRequired_SwitchEntryDirectionHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_CONTROL) == 0)))
+            if (((!ShiftRequired_SwitchEntryDirectionHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) < 0))
+                && ((!CtrlRequired_SwitchEntryDirectionHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_CONTROL) < 0)))
             {
                 if (sets.TradeDirection == Long)
                     sets.TradeDirection = Short;
@@ -1005,8 +1049,8 @@ if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKETHREEQUATER_BUTTON_NAME)
         }
         else if ((MainKey_SwitchOrderTypeHotKey != 0) && (lparam == MainKey_SwitchOrderTypeHotKey))
         {
-            if (((!ShiftRequired_SwitchOrderTypeHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) == 0))
-                && ((!CtrlRequired_SwitchOrderTypeHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_CONTROL) == 0)))
+            if (((!ShiftRequired_SwitchOrderTypeHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) < 0))
+                && ((!CtrlRequired_SwitchOrderTypeHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_CONTROL) < 0)))
             {
                 ExtDialog.OnClickBtnOrderType();
                 ChartRedraw();
@@ -1014,24 +1058,24 @@ if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKETHREEQUATER_BUTTON_NAME)
         }
         else if ((MainKey_SwitchHideShowLinesHotKey != 0) && (lparam == MainKey_SwitchHideShowLinesHotKey))
         {
-            if (((!ShiftRequired_SwitchHideShowLinesHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) == 0))
-                && ((!CtrlRequired_SwitchHideShowLinesHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_CONTROL) == 0)))
+            if (((!ShiftRequired_SwitchHideShowLinesHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) < 0))
+                && ((!CtrlRequired_SwitchHideShowLinesHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_CONTROL) < 0)))
             {
                 ExtDialog.OnClickBtnLines();
             }
         }
         else if ((MainKey_TradeHotKey != 0) && (lparam == MainKey_TradeHotKey))
         {
-            if (((!ShiftRequired_TradeHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) == 0))
-                && ((!CtrlRequired_TradeHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_CONTROL) == 0)))
+            if (((!ShiftRequired_TradeHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) < 0))
+                && ((!CtrlRequired_TradeHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_CONTROL) < 0)))
             {
                 Trade();
             }
         }
 		else if ((MainKey_SetBreakEvenHotKey != 0) && (lparam == MainKey_SetBreakEvenHotKey))
 		{
-			if (((!ShiftRequired_SetBreakEvenHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) != 0))
-				&& ((!CtrlRequired_SetBreakEvenHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_CONTROL) != 0)))
+			if (((!ShiftRequired_SetBreakEvenHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) < 0))
+				&& ((!CtrlRequired_SetBreakEvenHotKey) || (TerminalInfoInteger(TERMINAL_KEYSTATE_CONTROL) < 0)))
 			{
 				SetBreakEven();
 			}
@@ -1058,7 +1102,7 @@ if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKETHREEQUATER_BUTTON_NAME)
             }
         }
         // ==== PHÍM S: Đặt SL cho SELL, lấy giá cao nhất nến vừa click + spread ====
-        else if ((lparam == 'S' || lparam == 's') && (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) == 0))
+        else if ((lparam == 'S' || lparam == 's') && (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) >= 0))
         {
             int subwindow;
             double price;
@@ -1081,9 +1125,9 @@ if(id == CHARTEVENT_OBJECT_CLICK && sparam == TAKETHREEQUATER_BUTTON_NAME)
         }
         // ==== PHÍM SHIFT+S hoặc dùng input SetStopLossHotKey: đặt SL theo vị trí chuột (logic cũ, không phân biệt BUY/SELL) ====
         else if (
-            ((MainKey_SetStopLossHotKey != 0) && (lparam == MainKey_SetStopLossHotKey) && (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) != 0)) // Shift+S (input)
+            ((MainKey_SetStopLossHotKey != 0) && (lparam == MainKey_SetStopLossHotKey) && (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) < 0)) // Shift+S (input)
             ||
-            ((lparam == 'S' || lparam == 's') && (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) != 0)) // Shift+S (hardcode)
+            ((lparam == 'S' || lparam == 's') && (TerminalInfoInteger(TERMINAL_KEYSTATE_SHIFT) < 0)) // Shift+S (hardcode)
         )
         {
             int subwindow;
@@ -1385,6 +1429,29 @@ void TakeProfitThreeQuater()
 }
 
 
+
+// Helper function to count positions for current symbol
+int CountPositionsForSymbol()
+{
+    int count = 0;
+    for(int i=0; i<PositionsTotal(); i++)
+    {
+        if(PositionGetSymbol(i) == _Symbol)
+            count++;
+    }
+    return count;
+}
+
+// Helper function to get the first position ticket for current symbol
+ulong GetFirstPositionTicket()
+{
+    for(int i=0; i<PositionsTotal(); i++)
+    {
+        if(PositionGetSymbol(i) == _Symbol)
+            return PositionGetInteger(POSITION_TICKET);
+    }
+    return 0;
+}
 
 void CloseAllPositions()
 {
