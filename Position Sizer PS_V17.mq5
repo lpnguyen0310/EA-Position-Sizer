@@ -6,8 +6,8 @@
 #property copyright "EarnForex.com"
 #property link      "https://www.earnforex.com/metatrader-expert-advisors/Position-Sizer/"
 #property icon      "EF-Icon-64x64px.ico"
-#property version   "3.06 modV17"
-string    Version = "3.06 modV17";
+#property version   "3.06 modV19"
+string    Version = "3.06 modV19";
 
 
 
@@ -1269,6 +1269,8 @@ void ResetStopLossLineAfterSwitch()
 
 
 
+#define BE_OFFSET 1.0 // Giá trị trừ hao (1.0 USD cho vàng)
+
 void SetBreakEven()
 {
     int total = PositionsTotal();
@@ -1286,17 +1288,20 @@ void SetBreakEven()
             double entry  = PositionGetDouble(POSITION_PRICE_OPEN);
             double tp     = PositionGetDouble(POSITION_TP);
             int    magic  = (int)PositionGetInteger(POSITION_MAGIC);
+            long   type   = PositionGetInteger(POSITION_TYPE);
 
-            // Chỉ dời SL nếu chưa ở BE
             double sl = PositionGetDouble(POSITION_SL);
-            if(MathAbs(sl - entry) > _Point)
+            double be_sl = (type == POSITION_TYPE_BUY) ? (entry + BE_OFFSET) : (entry - BE_OFFSET);
+
+            // Kiểm tra đã ở BE offset chưa (tránh gửi lệnh thừa)
+            if(MathAbs(sl - be_sl) > _Point)
             {
                 MqlTradeRequest request = {};
                 MqlTradeResult  result  = {0};
                 request.action   = TRADE_ACTION_SLTP;
                 request.position = ticket;
                 request.symbol   = _Symbol;
-                request.sl       = entry;
+                request.sl       = be_sl;
                 request.tp       = tp;
                 request.magic    = magic;
                 request.deviation= 10;
@@ -1308,7 +1313,7 @@ void SetBreakEven()
         }
     }
     if(has_be)
-        MessageBox("Đã dời Stop Loss tất cả các lệnh về giá Entry (BE)!", "Thông báo", MB_ICONINFORMATION);
+        MessageBox(StringFormat("Đã dời Stop Loss tất cả các lệnh về BE + offset (%.2f)!", BE_OFFSET), "Thông báo", MB_ICONINFORMATION);
     else
         MessageBox("Không có lệnh nào cần dời về BE hoặc tất cả đã ở BE!", "Thông báo", MB_ICONINFORMATION);
 }
@@ -1635,7 +1640,7 @@ void ShowPartialClosePanel(double percent)
     ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_XDISTANCE, 25);
     ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_YDISTANCE, 20);
     ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_XSIZE, 350);
-    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_YSIZE, 36+27*MAX_PARTIAL_POS);
+    ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_YSIZE, 36+10*MAX_PARTIAL_POS);
     ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_BGCOLOR, clrAliceBlue);
     ObjectSetInteger(0, PARTIAL_PANEL_BG, OBJPROP_COLOR, clrBlue);
 
@@ -1741,4 +1746,3 @@ bool TakeProfitByTicket(ulong ticket, double percent)
     }
     return false;
 }
-
